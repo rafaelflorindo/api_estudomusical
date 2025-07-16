@@ -75,10 +75,11 @@ exports.listarTarefas = async (req, res) => {
   
   exports.criarTarefa = async (req, res) => {
     const planoId = req.params.id;
-    const { nome } = req.body;
+    console.log("Plano id = " +planoId)
+    const { descricao } = req.body;
   
-    if (!nome) {
-      return res.status(400).json({ erro: 'Nome da tarefa é obrigatório.' });
+    if (!descricao) {
+      return res.status(400).json({ erro: 'O campo Descrição da tarefa é obrigatório.' });
     }
   
     try {
@@ -89,12 +90,28 @@ exports.listarTarefas = async (req, res) => {
       if (!plano) {
         return res.status(404).json({ erro: 'Plano não encontrado ou não pertence ao usuário.' });
       }
-  
-      const novaTarefa = await Tarefa.create({ nome, planoId });
+      console.log("Plano id = " +planoId + "Descricao = " + descricao)
+      const novaTarefa = await Tarefa.create({ descricao, planoId });
       res.status(201).json(novaTarefa);
     } catch (err) {
       console.error('Erro ao criar tarefa:', err);
       res.status(500).json({ erro: 'Erro ao criar tarefa', detalhes: err });
     }
   };
-  
+  // No planoController.js (API)
+exports.atualizarPlano = async (req, res) => {
+  const { id } = req.params;
+  const { nome, diaSemana } = req.body;
+  try {
+    const plano = await Plano.findOne({ where: { id, UsuarioId: req.usuarioId } });
+    if (!plano) return res.status(404).json({ erro: 'Plano não encontrado' });
+    
+    plano.nome = nome || plano.nome;
+    plano.diaSemana = diaSemana || plano.diaSemana;
+    await plano.save();
+    
+    res.json(plano);
+  } catch (err) {
+    res.status(500).json({ erro: 'Erro ao atualizar plano', detalhes: err });
+  }
+};

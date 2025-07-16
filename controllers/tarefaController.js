@@ -53,25 +53,27 @@ exports.deletarTarefa = async (req, res) => {
   }
 };
 exports.atualizarTarefa = async (req, res) => {
-    const { id } = req.params;
-    const { concluida } = req.body;
-    const usuarioId = req.usuarioId;
-  
-    try {
-      const tarefa = await Tarefa.findByPk(id, {
-        include: [{ model: Plano }],
-      });
-  
-      if (!tarefa || tarefa.Plano.UsuarioId !== usuarioId) {
-        return res.status(404).json({ erro: 'Tarefa não encontrada ou não pertence ao usuário.' });
-      }
-  
-      tarefa.concluida = concluida;
-      await tarefa.save();
-  
-      return res.json(tarefa);
-    } catch (error) {
-      console.error('Erro ao atualizar tarefa:', error);
-      return res.status(500).json({ erro: 'Erro ao atualizar tarefa' });
+  const { id } = req.params;
+  const { concluida, descricao } = req.body; // agora aceita 'descricao'
+  const usuarioId = req.usuarioId;
+
+  try {
+    const tarefa = await Tarefa.findByPk(id, {
+      include: [{ model: Plano }],
+    });
+
+    if (!tarefa || tarefa.Plano.UsuarioId !== usuarioId) {
+      return res.status(404).json({ erro: 'Tarefa não encontrada ou não pertence ao usuário.' });
     }
-  };
+
+    if (concluida !== undefined) tarefa.concluida = concluida;
+    if (descricao !== undefined && descricao.trim() !== '') tarefa.descricao = descricao;
+
+    await tarefa.save();
+
+    return res.json(tarefa);
+  } catch (error) {
+    console.error('Erro ao atualizar tarefa:', error);
+    return res.status(500).json({ erro: 'Erro ao atualizar tarefa' });
+  }
+};

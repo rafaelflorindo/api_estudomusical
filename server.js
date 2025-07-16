@@ -14,6 +14,8 @@ app.use('/api/tarefas', require('./routes/tarefaRoutes'));
 
 
 
+
+
 // Teste conexão com banco e sync
 db.sequelize.sync().then(() => {
   console.log('Banco sincronizado com Sequelize');

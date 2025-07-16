@@ -8,6 +8,6 @@ router.use(authMiddleware);
 router.post('/', tarefaController.adicionarTarefa);
 router.patch('/:id/concluir', tarefaController.marcarConcluida);
 router.delete('/:id', tarefaController.deletarTarefa);
-router.put('/tarefas/:id', tarefaController.atualizarTarefa);
+router.put('/:id', tarefaController.atualizarTarefa);
 
 module.exports = router;
